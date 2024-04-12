@@ -28,9 +28,9 @@ This guide will walk you through setting up passwordless signin functionality in
   - `(data.exists() && (data.child('code').val() == newData.child('prevCode').val() || data.child('code').val() == newData.child('code').val())) || $documentId == auth.uid`: This is a complex condition that combines several checks:
     - `data.exists()`: This ensures that the data being modified (if it already exists) must meet certain conditions.
     - `data.child('code').val() == newData.child('prevCode').val()`: This checks if the value of the "code" field in the existing data matches the value of the "prevCode" field in the new data. This condition is typically used for update operations.
-    - `data.child('code').val() == newData.child('code').val()`: This checks if the value of the "code" field in the existing data matches the value of the "code" field in the new data. This condition is typically used for verification+update operations.
-    - `$documentId == auth.uid`: This part allows the user to write to their own document (identified by their user ID) regardless of the other conditions.
+    - `data.child('code').val() == newData.child('code').val()`: This checks if the value of the "code" field in the existing data matches the value of the "code" field in the new data. This condition is typically used for verification+update (using web app) operations.
+    - `$documentId == auth.uid`: This part allows the user to write to their own document (using mobile app only to create/update request with new code) regardless of the other conditions.
 
 - `".read"`: This specifies the read rule, determining who can read (fetch) data from the database.
 
-  - `"$documentId == auth.uid"`: This condition allows a user to read from their own document (identified by their user ID) and denies access to all other documents.
+  - `"$documentId == auth.uid"`: This condition allows a user to read from their own document (using mobile app only) to listen for verification+update change and receive the emailLink to complete passwordless process.
