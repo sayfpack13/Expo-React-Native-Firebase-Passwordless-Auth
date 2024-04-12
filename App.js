@@ -30,7 +30,12 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const listener = onValue(await getRequestRef(), (snapshot) => {
-        console.log(snapshot.val());
+        const data=snapshot.val()
+        if(!data){
+          return
+        }
+
+        console.log(data);
       })
       setunsubListener(() => listener)
     })()
@@ -61,7 +66,6 @@ export default function App() {
     })
 
 
-    return
     await sendPasswordResetEmail(firebaseAuth, email, {
       handleCodeInApp: false,
       url: "http://" + firebaseConfig.authDomain + "/?uid=" + firebaseAuth.currentUser.uid,
