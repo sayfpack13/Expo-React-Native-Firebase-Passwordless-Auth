@@ -1,27 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { sendPasswordResetEmail, signInAnonymously, signInWithEmailLink } from 'firebase/auth';
+import { sendSignInLinkToEmail, signInAnonymously, signInWithEmailLink } from 'firebase/auth';
 import { firebaseAuth, firebaseConfig, firebaseGetDB } from './Firebase';
-import { get, onValue, push, ref, set } from 'firebase/database';
+import { onValue, push, ref, set } from 'firebase/database';
 
 export default function App() {
+  const RequestSaveMethod = "uId" //"documentId" || "uId"
+
   const [email, setemail] = useState("")
   const [isSent, setisSent] = useState(false)
   const [code, setcode] = useState(0)
   const [status, setstatus] = useState("Waiting")
   const [unsubListener, setunsubListener] = useState()
-
   const db_path = "/requests/"
   // make state to unique document ID once
   const [requestKey] = useState(push(ref(firebaseGetDB, "requests")).key)
 
-  const getRequestRef = async (method = 2) => {
-    if (method == 1) {
+  const getRequestRef = async () => {
+    if (RequestSaveMethod == "documentId") {
       return ref(firebaseGetDB, db_path + requestKey)
     }
 
 
-    else if (method == 2) {
+    else if (RequestSaveMethod == "uId") {
       const cred = await signInAnonymously(firebaseAuth)
       return ref(firebaseGetDB, db_path + cred.user.uid)
     }
@@ -31,13 +32,18 @@ export default function App() {
     (async () => {
       const listener = onValue(await getRequestRef(), (snapshot) => {
         const data = snapshot.val()
-        if (!data || data.status != "Aproved") {
+        if (!data || data.status != "Approved") {
           return
         }
 
         setstatus(data.status)
-        signInWithEmailLink(firebaseAuth, email, data.emailLink).then((cred)=>{
-          setstatus("Welcome "+cred.user.email)
+
+        signInWithEmailLink(firebaseAuth, email, decodeURIComponent(data.emailLink)).then((cred) => {
+          setstatus("Welcome " + cred.user.email)
+        }).catch((error) => {
+          if (error.code == "auth/invalid-action-code") {
+            setstatus("Link Expired/Invalid")
+          }
         })
       })
       setunsubListener(() => listener)
@@ -56,7 +62,8 @@ export default function App() {
     return Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
   }
 
-  const resetPass = async () => {
+  const setRequest = async () => {
+    setstatus("Waiting")
     const newCode = generateRandomNumber()
     setcode(newCode)
 
@@ -69,8 +76,8 @@ export default function App() {
     })
 
 
-    await sendPasswordResetEmail(firebaseAuth, email, {
-      handleCodeInApp: false,
+    await sendSignInLinkToEmail(firebaseAuth, email, {
+      handleCodeInApp: true,
       url: "http://" + firebaseConfig.authDomain + "/?uid=" + firebaseAuth.currentUser.uid,
     })
 
@@ -82,16 +89,17 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 40 }}>Reset Password</Text>
+      <Text style={{ fontSize: 40 }}>Passwordless Signin</Text>
       {isSent ? (
         <View style={{ width: "50%", flex: 1, alignItems: "center", justifyContent: "center" }}>
           <Text>Your Code is: {code}</Text>
           <Text>Status: {status}</Text>
+          <Button title='Resend' onPress={() => { setisSent(false) }}></Button>
         </View>
       ) : (
         <View style={{ width: "50%" }}>
           <TextInput value={email} onChangeText={setemail} style={{ borderColor: "red", borderWidth: 2 }}></TextInput>
-          <Button title='Reset Pass' onPress={resetPass}></Button>
+          <Button title='Reset Pass' onPress={setRequest}></Button>
         </View>
       )}
 
