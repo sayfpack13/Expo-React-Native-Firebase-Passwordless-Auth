@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Extract Params</title>
+  <title>Passwordless Portal</title>
   <script type="module">
     var urlParams = new URLSearchParams(window.location.search);
 
@@ -25,8 +25,8 @@
     if (!mode) {
       document.getElementById("home-form").style.display = "block";
     }
-    else if (!uid || !oobCode || !apiKey) {
-      document.getElementById("error-msg").innerHTML+=(!uid ? " uid |" : " |")+(!oobCode ? " oobCode |" : " |")+(!apiKey ? " apiKey |" : " |");
+    else if (!continueUrl || !uid || !oobCode || !apiKey) {
+      document.getElementById("error-msg").innerHTML+=(!continueUrl ? " ?continueUrl |" : " |")+(!uid ? " ?uid of continueUrl |" : " |")+(!oobCode ? " ?oobCode |" : " |")+(!apiKey ? " ?apiKey |" : " |");
       document.getElementById("error-form").style.display = "block";
     } else {
       document.getElementById("signin-form").style.display = "block";
