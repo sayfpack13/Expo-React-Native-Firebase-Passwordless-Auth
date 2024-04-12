@@ -15,6 +15,7 @@ This guide will walk you through setting up passwordless signin functionality in
     }
   }
 }
+```
 
 ### Explanation
 
