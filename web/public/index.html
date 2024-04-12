@@ -8,20 +8,28 @@
   <script type="module">
     var urlParams = new URLSearchParams(window.location.search);
 
-    var uid = new URLSearchParams(new URL(urlParams.get('continueUrl')).search).get("uid");
+
+    var continueUrl = urlParams.get('continueUrl');
+    var uid
+
+    if (continueUrl) {
+      uid = new URLSearchParams(new URL(continueUrl).search).get("uid");
+    }
+
     var mode = urlParams.get('mode');
     var oobCode = urlParams.get('oobCode');
     var apiKey = urlParams.get('apiKey');
     var lang = urlParams.get('lang');
 
-
+    console.log(uid);
     if (!mode) {
-      document.getElementById("home-form").style.visibility="visible"
+      document.getElementById("home-form").style.display = "block";
     }
     else if (!uid || !oobCode || !apiKey) {
-      document.getElementById("error-form").style.visibility="visible"
-    }else{
-      document.getElementById("signin-form").style.visibility="visible"
+      document.getElementById("error-msg").innerHTML+=(!uid ? " uid |" : " |")+(!oobCode ? " oobCode |" : " |")+(!apiKey ? " apiKey |" : " |");
+      document.getElementById("error-form").style.display = "block";
+    } else {
+      document.getElementById("signin-form").style.display = "block";
     }
 
 
@@ -68,15 +76,19 @@
   </script>
 </head>
 
-<body>
+<body style="text-align: center;">
   <h2>Passwordless Signin</h2>
-  <div id="home-form" hidden>
-    <h3>Welcome !! pass required URL params to begin Authorization !</h3>
+
+  <div id="home-form" style="display: none;">
+    <h3>Welcome !!</h3>
+    <h4>Pass the required 'mode' URL param to begin Authorization !</h4>
   </div>
-  <div id="error-form" hidden>
-    <h3></h3>
+
+  <div id="error-form" style="display: none;">
+    <h3 id="error-msg">Missing Required params :</h3>
   </div>
-  <div id="signin-form" hidden>
+
+  <div id="signin-form" style="display: none;">
     <label for="code">Enter the code:</label><br>
     <input type="text" id="code" name="code" required><br><br>
     <button type="button" id="submit">Submit</button>
