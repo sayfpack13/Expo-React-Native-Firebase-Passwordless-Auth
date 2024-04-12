@@ -15,4 +15,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MMGC_98BEB }}'
           channelId: live
           projectId: mmgc-98beb
-          directory: web
+          entryPoint: web
