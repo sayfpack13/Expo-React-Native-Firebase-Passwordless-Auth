@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { sendPasswordResetEmail, signInAnonymously } from 'firebase/auth';
+import { sendPasswordResetEmail, signInAnonymously, signInWithEmailLink } from 'firebase/auth';
 import { firebaseAuth, firebaseConfig, firebaseGetDB } from './Firebase';
 import { get, onValue, push, ref, set } from 'firebase/database';
 
@@ -30,12 +30,15 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const listener = onValue(await getRequestRef(), (snapshot) => {
-        const data=snapshot.val()
-        if(!data){
+        const data = snapshot.val()
+        if (!data || data.status != "Aproved") {
           return
         }
 
-        console.log(data);
+        setstatus(data.status)
+        signInWithEmailLink(firebaseAuth, email, data.emailLink).then((cred)=>{
+          setstatus("Welcome "+cred.user.email)
+        })
       })
       setunsubListener(() => listener)
     })()
