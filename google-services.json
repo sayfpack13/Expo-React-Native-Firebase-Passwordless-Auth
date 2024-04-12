@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576330168916",
+    "project_id": "mmgc-98beb",
+    "storage_bucket": "mmgc-98beb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576330168916:android:f6666289be3e29dbe90bc1",
+        "android_client_info": {
+          "package_name": "com.exp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf25dnvwp5JIz6zX8IrE6f9GCvM76co6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
