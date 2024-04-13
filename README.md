@@ -25,5 +25,5 @@ This guide will walk you through setting up passwordless signin functionality in
 
 ### Explanation
 
-- `"Method 1"`: Using the unique ID of an anonymous authenticated user (secured with Firebase Auth rules). The user can write to a document if the document already exists and the value of the "code" field in the existing data matches the value of the "code" field in the new data, or if the user is the owner of the document (identified by their user ID).
+- `"Method 1"`: Using the unique ID of an anonymous authenticated user (secured with Firebase Auth rules). The user can write to a document if the document already exists and the value of the "code" field in the existing data matches the value of the "code" field in the new data (used in web app to confirm/complete passwordless process), or if the user is the owner of the document (identified by their user ID).
 - `"Method 2"`: Using a simple unique ID (not recommended for security reasons). The user can write to a document if it already exists and the value of the "code" field in the existing data matches the value of the "code" field in the new data. However, note that this method also requires the user to guess the document UID, which adds a layer of security.
