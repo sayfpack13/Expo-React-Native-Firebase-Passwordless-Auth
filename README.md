@@ -1,4 +1,4 @@
-# Passwordless Signin using Expo/React-Native + Firebase Web App + Realtime Database
+# Passwordless Auth using Expo/React-Native + Firebase Web App + Realtime Database
 
 This guide will walk you through setting up passwordless signin functionality in your Expo/React-Native app using Firebase Web App and Realtime Database for data exchange and listening.
 
