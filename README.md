@@ -9,12 +9,18 @@ This guide will walk you through setting up passwordless signin functionality in
   "rules": {
     "requests": {
       "$documentId": {
-        ".write": "(data.exists() && (data.child('code').val() == newData.child('prevCode').val() || data.child('code').val() == newData.child('code').val())) || $documentId == auth.uid",
+        // Method 1: using anonymous authenticated user unique Id (secured with firebase auth rules)
+        ".write": "(data.exists() && data.child('code').val() == newData.child('code').val()) || $documentId == auth.uid",
         ".read": "$documentId == auth.uid"
+        
+        // Method 2: using simple unique Id (not recommended for security reasons)
+        //".write": "data.exists() && data.child('code').val() == newData.child('code').val()",
+        //".read": "true"
       }
     }
   }
 }
+
 ```
 
 ### Explanation
