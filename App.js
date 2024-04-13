@@ -12,16 +12,14 @@ import UserHome from './src/user/UserHome';
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [user, setUser] = useState()
-  const [anonymousUser,setanonymousUser]=useState()
+  const [anonymousUser, setanonymousUser] = useState()
 
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user?.isAnonymous) {
       setanonymousUser(user)
-    }else if(!user?.isAnonymous){
-      if(anonymousUser){
-        deleteUser(anonymousUser).then(()=>{
-          Alert.alert("Success","Deleted Anonymous User !!")
-        })
+    } else if (!user?.isAnonymous) {
+      if (anonymousUser) {
+        deleteUser(anonymousUser)
       }
 
       setUser(user)
@@ -30,18 +28,18 @@ export default function App() {
 
 
   return (
-      <NavigationContainer>
-        {user ?
-          <Stack.Navigator initialRouteName='home'>
-            <Stack.Screen name='home' component={UserHome}></Stack.Screen>
-          </Stack.Navigator>
-          :
-          <Stack.Navigator initialRouteName='home'>
-            <Stack.Screen name='home' component={Home}></Stack.Screen>
-            <Stack.Screen name='otp' component={OTPComponent}></Stack.Screen>
-            <Stack.Screen name='qr' component={QRComponent}></Stack.Screen>
-          </Stack.Navigator>}
-      </NavigationContainer>
+    <NavigationContainer>
+      {user ?
+        <Stack.Navigator initialRouteName='home'>
+          <Stack.Screen name='home' component={UserHome}></Stack.Screen>
+        </Stack.Navigator>
+        :
+        <Stack.Navigator initialRouteName='home'>
+          <Stack.Screen name='home' component={Home}></Stack.Screen>
+          <Stack.Screen name='otp' component={OTPComponent}></Stack.Screen>
+          <Stack.Screen name='qr' component={QRComponent}></Stack.Screen>
+        </Stack.Navigator>}
+    </NavigationContainer>
   );
 }
 
