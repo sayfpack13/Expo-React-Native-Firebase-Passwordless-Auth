@@ -5,7 +5,11 @@ import { firebaseAuth, firebaseConfig, firebaseGetDB } from './Firebase';
 import { onValue, push, ref, set } from 'firebase/database';
 
 export default function App() {
-  const RequestSaveMethod = "uId" //"documentId" || "uId"
+  /*
+  Method 1: using anonymous authenticated user unique Id (secured with firebase auth rules)
+  Method 2: using simple unique Id (not recommended for security reasons)
+  */
+  const RequestSaveMethod = "uuId"
 
   const [email, setemail] = useState("")
   const [isSent, setisSent] = useState(false)
@@ -13,16 +17,16 @@ export default function App() {
   const [status, setstatus] = useState("Waiting")
   const [unsubListener, setunsubListener] = useState()
   const db_path = "/requests/"
-  // make state to unique document ID once
+  // make state to generate unique Id once
   const [requestKey] = useState(push(ref(firebaseGetDB, "requests")).key)
 
   const getRequestRef = async () => {
-    if (RequestSaveMethod == "documentId") {
+    if (RequestSaveMethod == "uId") {
       return ref(firebaseGetDB, db_path + requestKey)
     }
 
 
-    else if (RequestSaveMethod == "uId") {
+    else if (RequestSaveMethod == "uuId") {
       const cred = await signInAnonymously(firebaseAuth)
       return ref(firebaseGetDB, db_path + cred.user.uid)
     }

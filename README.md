@@ -19,18 +19,5 @@ This guide will walk you through setting up passwordless signin functionality in
 
 ### Explanation
 
-- `"requests"`: This is the name of the collection in the Realtime Database where these rules apply. In this case, it's assumed that there's a collection named "requests".
-
-- `"$documentId"`: This is a wildcard that represents any document (or node) within the "requests" collection. It allows us to apply these rules to every document within that collection.
-
-- `".write"`: This specifies the write rule, determining who can write (create, update, or delete) data in the database.
-
-  - `(data.exists() && (data.child('code').val() == newData.child('prevCode').val() || data.child('code').val() == newData.child('code').val())) || $documentId == auth.uid`: This is a complex condition that combines several checks:
-    - `data.exists()`: This ensures that the data being modified (if it already exists) must meet certain conditions.
-    - `data.child('code').val() == newData.child('prevCode').val()`: This checks if the value of the "code" field in the existing data matches the value of the "prevCode" field in the new data. This condition is typically used for update operations.
-    - `data.child('code').val() == newData.child('code').val()`: This checks if the value of the "code" field in the existing data matches the value of the "code" field in the new data. This condition is typically used for verification+update (using web app) operations.
-    - `$documentId == auth.uid`: This part allows the user to write to their own document (using mobile app only to create/update request with new code) regardless of the other conditions.
-
-- `".read"`: This specifies the read rule, determining who can read (fetch) data from the database.
-
-  - `"$documentId == auth.uid"`: This condition allows a user to read from their own document (using mobile app only) to listen for verification+update change and receive the emailLink to complete passwordless process.
+- `"Method 1"`: Using the unique ID of an anonymous authenticated user (secured with Firebase Auth rules). The user can write to a document if the document already exists and the value of the "code" field in the existing data matches the value of the "code" field in the new data, or if the user is the owner of the document (identified by their user ID).
+- `"Method 2"`: Using a simple unique ID (not recommended for security reasons). The user can write to a document if it already exists and the value of the "code" field in the existing data matches the value of the "code" field in the new data. However, note that this method also requires the user to guess the document UID, which adds a layer of security.
