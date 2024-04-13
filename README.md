@@ -6,7 +6,7 @@ This guide will walk you through setting up passwordless signin functionality in
 ## How it Works ? (2 Methods)
 - OTP (One-Time Password) Authentication: The process begins with the mobile app writing the user's unique ID (UID) to the email link sent to the user. When the user clicks the link, they are directed to the web app where they input the OTP code displayed in the mobile app. Subsequently, the web app writes to the Realtime Database on the request document with the provided 'UID'. If the provided 'code' matches the security rules for write access, the emailLink will be written. Finally, the mobile app listens for changes in the same document 'UID' and retrieves the emailLink to authenticate.
 
-- QR Code Authentication: Users generate a QR code within the web application, based on the authentication email link parameters. They then scan this QR code using the mobile application to authenticate themselves seamlessly. This method provides an intuitive and secure means of authentication, enhancing the user experience while maintaining robust security measures.
+- QR Code Authentication: The QR code is generated within the web application, based on the authentication email link parameters. The user then scan this QR code using the mobile application to authenticate themselves seamlessly. This method provides an intuitive and secure means of authentication, enhancing the user experience while maintaining robust security measures.
 
 ## Security Rules
 
