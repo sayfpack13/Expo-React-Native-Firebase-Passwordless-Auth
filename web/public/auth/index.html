@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.js"></script>
+  <title>Passwordless Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: #333;
+    }
+
+    #home-form,
+    #error-form,
+    #otp-form,
+    #qr-form {
+      display: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #qrcode {
+      margin: 20px auto;
+      width:fit-content;
+    }
+  </style>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2PTAn8xEJTd_3AhwxSwsVOEbT3lJGQBw",
+      authDomain: "mmgc-98beb.firebaseapp.com",
+      databaseURL: "https://mmgc-98beb-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "mmgc-98beb",
+      storageBucket: "mmgc-98beb.appspot.com",
+      messagingSenderId: "576330168916",
+      appId: "1:576330168916:web:e44c45c83b91af25e90bc1"
+    };
+
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const firebaseDB = getDatabase(firebaseApp);
+
+    function generateQR(inputText) {
+      var qrCodeDiv = document.getElementById("qrcode");
+      qrCodeDiv.innerHTML = ""; // Clear previous QR code if any
+      new QRCode(qrCodeDiv, inputText);
+    }
+
+    document.getElementById("saveQR").addEventListener("click", function () {
+      var qrCodeDiv = document.getElementById("qrcode")
+      var a = document.createElement('a');
+      a.href = qrCodeDiv.getElementsByTagName("img")[0].getAttribute("src");
+      a.download = 'qr_code.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+
+
+
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var continueUrl = urlParams.get('continueUrl');
+    var uid
+    var qr
+
+    if (continueUrl) {
+      uid = new URLSearchParams(new URL(continueUrl).search).get("uid");
+      qr = new URLSearchParams(new URL(continueUrl).search).get("qr");
+    }
+
+    var mode = urlParams.get('mode');
+    var oobCode = urlParams.get('oobCode');
+    var apiKey = urlParams.get('apiKey');
+    var lang = urlParams.get('lang');
+
+
+    if (!mode) {
+      document.getElementById("home-form").style.display = "block";
+    }
+    else if (!continueUrl || (!uid && !qr) || !oobCode || !apiKey) {
+      document.getElementById("error-msg").innerHTML += (!continueUrl ? " ?continueUrl |" : " |") + (!uid && !qr ? " ?uid or ?qr of continueUrl |" : " |") + (!oobCode ? " ?oobCode |" : " |") + (!apiKey ? " ?apiKey |" : " |");
+      document.getElementById("error-form").style.display = "block";
+    } else {
+      // all params passed correctly
+      if (uid) {
+        // OTP Authorization
+        document.getElementById("otp-form").style.display = "block";
+      }
+      else if (qr) {
+        // QR Authorization
+        generateQR(window.location.href);
+        document.getElementById("qr-form").style.display = "block";
+      }
+
+    }
+
+
+
+
+
+
+
+
+    document.getElementById("saveOTP").addEventListener("click", function () {
+      const code = Number(document.getElementById("code").value) || 0;
+      const emailLink = window.location.href;
+      const databaseRef = ref(firebaseDB, '/requests/' + uid);
+
+
+
+      set(databaseRef, {
+        code,
+        emailLink,
+        status: "Approved"
+      }).then(() => {
+        alert("Verified !!")
+      }).catch((error) => {
+        alert("Wrong Code !!")
+      });
+    })
+
+  </script>
+</head>
+
+<body style="text-align: center;">
+  <div class="container">
+    <h1 style="text-align: center;">Passwordless Authentication</h1>
+
+    <div id="home-form">
+      <h2>Welcome !!</h2>
+      <p>Pass the required 'mode' URL param to begin Authorization!</p>
+    </div>
+
+    <div id="error-form">
+      <h2>Missing Required params :</h2>
+      <p id="error-msg"></p>
+    </div>
+
+    <div id="otp-form">
+      <h2>Enter the code:</h2>
+      <input type="text" id="code" name="code" required><br><br>
+      <button type="button" id="saveOTP">Submit</button>
+    </div>
+
+    <div id="qr-form">
+      <div id="qrcode"></div>
+      <br>
+      <button id="saveQR">Save Image</button>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -36,24 +36,28 @@ export default function OTPComponent({ route }) {
 
     useEffect(() => {
         (async () => {
+            // init uId
+            await getRequestRef()
+
+            // send init request
             setRequest()
 
-            const listener = onValue(await getRequestRef(),async (snapshot) => {
+            const listener = onValue(await getRequestRef(), async (snapshot) => {
                 const data = snapshot.val()
                 if (!data || data.status != "Approved") {
                     return
                 }
-                
+                setstatus(data.status)
+
+
                 // delete request secret data for security reasons
-                set(await getRequestRef(), {
+                await set(await getRequestRef(), {
                     status: "Done"
                 })
 
-                setstatus(data.status)
 
-                signInWithEmailLink(firebaseAuth, email, decodeURIComponent(data.emailLink)).then((cred) => {
-                    //setstatus("Welcome " + cred.user.email)
-                }).catch((error) => {
+
+                await signInWithEmailLink(firebaseAuth, email, decodeURIComponent(data.emailLink)).catch((error) => {
                     if (error.code == "auth/invalid-action-code") {
                         setstatus("Link Expired/Invalid")
                     }
@@ -76,6 +80,7 @@ export default function OTPComponent({ route }) {
     }
 
     const setRequest = async () => {
+        setisSent(false)
         seterrorMsg("")
         setstatus("Waiting")
         const newCode = generateRandomNumber()
