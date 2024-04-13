@@ -12,18 +12,11 @@ import UserHome from './src/user/UserHome';
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [user, setUser] = useState()
-  const [anonymousUser, setanonymousUser] = useState()
 
   onAuthStateChanged(firebaseAuth, (user) => {
-    if (user?.isAnonymous) {
-      setanonymousUser(user)
-    } else if (!user?.isAnonymous) {
-      if (anonymousUser) {
-        deleteUser(anonymousUser)
-      }
-
+    if (!user?.isAnonymous) {
       setUser(user)
-    }
+    } 
   })
 
 
